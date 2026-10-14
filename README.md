@@ -1,5 +1,9 @@
 ﻿# ProjectNet - Orders, Customers and Products Microservice Demo
 
+[![CI](https://github.com/AdrianPi87/ProjectNet/actions/workflows/ci.yml/badge.svg)](https://github.com/AdrianPi87/ProjectNet/actions/workflows/ci.yml)
+![.NET 8](https://img.shields.io/badge/.NET-8-512BD4?logo=dotnet)
+![Angular 22](https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white)
+
 A full-stack demo aligned with a senior .NET 8 / ASP.NET Core role.
 
 - **Backend**: C# / .NET 8, ASP.NET Core Web API, **CQRS** (MediatR), **DDD** aggregates, **SOLID**, **hexagonal architecture**.
@@ -195,6 +199,34 @@ kubectl apply -f backend/deploy/k8s/
 ## Azure DevOps
 
 `azure-pipelines.yml` restores, builds and tests both backend and frontend, publishes build artifacts and builds the container image.
+
+## Preview
+
+The UI uses a clean, high-contrast, Tailwind-inspired design system. Store screenshot assets under docs/screenshots/ and reference them here.
+
+- docs/screenshots/order-list.png - paginated orders, filters and actions
+- docs/screenshots/order-detail.png - order details, customer/product data and transitions
+- docs/screenshots/product-catalog.png - product catalog with category filtering
+- docs/screenshots/create-order.png - order creation with customer selection
+
+`mermaid
+flowchart LR
+  User[User / Browser] --> Angular[Angular 22 SPA]
+  Angular --> Api[ASP.NET Core Web API]
+  Api --> Orders[Orders]
+  Api --> Catalog[Customers / Products]
+  Api --> Sql[(SQL Server)]
+  Api --> MassTransit
+  MassTransit --> Consumer[OrderCreated consumer]
+`
+
+## GitHub branch protection (recommended)
+
+- Require a pull request before merging to main.
+- Require at least one review.
+- Require status checks: Backend (.NET 8) and Frontend (Angular 22).
+- Block force pushes and direct commits to main.
+- Require branches to be up to date before merging.
 
 ## Notes for interviews
 
