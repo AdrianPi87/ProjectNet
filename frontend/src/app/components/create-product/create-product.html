@@ -1,0 +1,25 @@
+﻿<section class="container narrow">
+  <header class="toolbar">
+    <h1>New Product</h1>
+    <a routerLink="/products" class="btn">Back</a>
+  </header>
+
+  @if (success()) { <p class="success">{{ success() }}</p> }
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card">
+    <label>Name</label>
+    <input formControlName="name" />
+    <label>SKU</label>
+    <input formControlName="sku" />
+    <label>Category</label>
+    <input formControlName="category" />
+    <label>Unit price</label>
+    <input formControlName="unitPrice" type="number" step="0.01" />
+
+    <button type="submit" [disabled]="form.invalid || submitting()" class="btn btn-primary">
+      {{ submitting() ? 'Creating...' : 'Create product' }}
+    </button>
+  </form>
+</section>
+

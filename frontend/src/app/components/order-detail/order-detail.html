@@ -1,0 +1,78 @@
+﻿<section class="container">
+  @if (order$ | async; as order) {
+    <header class="toolbar">
+      <h1>Order {{ order.id }}</h1>
+      <a routerLink="/" class="btn">Back</a>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Summary</h2>
+        <p><strong>Customer:</strong> {{ customerName(order.customerId) }}</p>
+        <p><strong>Status:</strong> <span class="badge" [class]="order.status.toLowerCase()">{{ order.status }}</span></p>
+        <p><strong>Total:</strong> {{ order.total | number:'1.2-2' }}</p>
+        <p><strong>Created:</strong> {{ order.createdAtUtc | date:'medium' }}</p>
+      </div>
+
+      <div class="card">
+        <h2>Actions</h2>
+        <div class="actions">
+          @if (order.status === 'Pending') {
+            <button class="btn btn-primary" [disabled]="working" (click)="confirm()">Confirm</button>
+            <button class="btn" [disabled]="working" (click)="showLineForm = true">Add line</button>
+          }
+          @if (order.status === 'Confirmed') {
+            <button class="btn btn-primary" [disabled]="working" (click)="ship()">Ship</button>
+          }
+          @if (order.status !== 'Shipped' && order.status !== 'Cancelled') {
+            <button class="btn btn-danger" [disabled]="working" (click)="cancel()">Cancel</button>
+          }
+        </div>
+        @if (error) { <p class="error">{{ error }}</p> }
+      </div>
+    </div>
+
+    @if (showLineForm) {
+      <form [formGroup]="lineForm" (ngSubmit)="addLine()" class="card">
+        <h2>Add Line</h2>
+        <div class="row">
+          <select formControlName="productId">
+            @for (product of products(); track product.id) {
+              <option [value]="product.id">{{ product.name }} ({{ product.sku }})</option>
+            }
+          </select>
+          <input type="number" formControlName="quantity" placeholder="Qty" />
+          <input type="number" step="0.01" formControlName="unitPrice" placeholder="Unit price" />
+        </div>
+        <button type="submit" [disabled]="lineForm.invalid || working" class="btn btn-primary">Add</button>
+      </form>
+    }
+
+    <div class="card">
+      <h2>Lines</h2>
+      @if (order.lines.length) {
+        <table class="table">
+          <thead>
+            <tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            @for (line of order.lines; track line.productId) {
+              <tr>
+                <td>{{ productName(line.productId) }}</td>
+                <td class="mono">{{ productSku(line.productId) }}</td>
+                <td>{{ line.quantity }}</td>
+                <td>{{ line.unitPrice | number:'1.2-2' }}</td>
+                <td>{{ line.lineTotal | number:'1.2-2' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="muted">No lines yet.</p>
+      }
+    </div>
+  } @else {
+    <p class="muted">Loading order...</p>
+  }
+</section>
+

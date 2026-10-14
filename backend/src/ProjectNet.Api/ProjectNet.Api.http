@@ -1,0 +1,6 @@
+@ProjectNet.Api_HostAddress = http://localhost:5080
+
+GET {{ProjectNet.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

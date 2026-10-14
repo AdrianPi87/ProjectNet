@@ -1,0 +1,42 @@
+﻿<section class="container">
+  <header class="toolbar">
+    <h1>Product Catalog</h1>
+    <a routerLink="/products/create" class="btn btn-primary">New Product</a><a routerLink="/" class="btn">Back to Orders</a>
+  </header>
+
+  <div class="filters">
+    <input
+      type="search"
+      placeholder="Search by name, SKU or category..."
+      [ngModel]="searchTerm()"
+      (ngModelChange)="onSearch($event)"
+      class="search" />
+    <select [ngModel]="selectedCategory()" (ngModelChange)="onCategory($event)">
+      @for (category of categories(); track category) {
+        <option [value]="category">{{ category }}</option>
+      }
+    </select>
+  </div>
+
+  @if (filteredProducts().length) {
+    <table class="table">
+      <thead>
+        <tr><th>Name</th><th>SKU</th><th>Category</th><th>Price</th></tr>
+      </thead>
+      <tbody>
+        @for (product of filteredProducts(); track product.id) {
+          <tr>
+            <td>{{ product.name }}</td>
+            <td class="mono">{{ product.sku }}</td>
+            <td><span class="category">{{ product.category }}</span></td>
+            <td>{{ product.unitPrice | number:'1.2-2' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="muted">No products match your filters.</p>
+  }
+</section>
+
+

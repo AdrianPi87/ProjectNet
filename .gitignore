@@ -1,0 +1,29 @@
+﻿# OS
+Thumbs.db
+.DS_Store
+
+# .NET
+backend/**/bin/
+backend/**/obj/
+backend/**/*.user
+backend/.vs/
+backend/*.db
+backend/*.db-*
+backend/src/ProjectNet.Api/projectnet.db*
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/npm-debug.log*
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+
+# Environment secrets
+.env
+.env.*
+
+# Logs
+*.log

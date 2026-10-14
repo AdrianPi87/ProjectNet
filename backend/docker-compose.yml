@@ -1,0 +1,28 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: projectnet-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "ProjectNet!StrongPass1"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  orders-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Default: "Server=sqlserver,1433;Database=ProjectNet;User Id=sa;Password=ProjectNet!StrongPass1;TrustServerCertificate=True;"
+      Messaging__UseRabbitMq: "false"
+    depends_on:
+      - sqlserver
+    restart: unless-stopped
+
+volumes:
+  mssql-data:
+    driver: local

@@ -1,0 +1,75 @@
+﻿<section class="container">
+  <header class="toolbar">
+    <h1>Orders</h1>
+    <div class="header-actions">
+      <a routerLink="/products" class="btn">Catalog</a>
+      <a routerLink="/create" class="btn btn-primary">New Order</a>
+    </div>
+  </header>
+
+  <div class="filters">
+    <select [ngModel]="selectedStatus()" (ngModelChange)="changeStatus($event)">
+      <option value="ALL">All statuses</option>
+      <option value="Pending">Pending</option>
+      <option value="Confirmed">Confirmed</option>
+      <option value="Shipped">Shipped</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <select [ngModel]="selectedCustomerId()" (ngModelChange)="changeCustomer($event)">
+      <option value="">All customers</option>
+      @for (customer of customers(); track customer.id) {
+        <option [value]="customer.id">{{ customer.name }}</option>
+      }
+    </select>
+
+    <select [ngModel]="pageSize()" (ngModelChange)="changePageSize($event)">
+      <option value="5">5 / page</option>
+      <option value="10">10 / page</option>
+      <option value="20">20 / page</option>
+    </select>
+  </div>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="muted">Loading orders...</p>
+  } @else if (orders().length) {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (order of orders(); track order.id) {
+          <tr>
+            <td class="mono">{{ order.id }}</td>
+            <td>{{ customerName(order.customerId) }}</td>
+            <td><span class="badge" [class]="order.status.toLowerCase()">{{ order.status }}</span></td>
+            <td>{{ order.total | number:'1.2-2' }}</td>
+            <td>{{ order.createdAtUtc | date:'medium' }}</td>
+            <td><a [routerLink]="['/orders', order.id]" class="btn">View</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else {
+    <p class="muted">No orders match these filters.</p>
+  }
+
+  <div class="pagination">
+    <button class="btn" [disabled]="page() === 1" (click)="previousPage()">Previous</button>
+    <span>Page {{ page() }} of {{ totalPages() }} ({{ totalCount() }} total)</span>
+    <button class="btn" [disabled]="page() === totalPages()" (click)="nextPage()">Next</button>
+  </div>
+</section>
+
+
