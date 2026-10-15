@@ -1,0 +1,22 @@
+<section class="container narrow">
+  <header class="toolbar">
+    <h1>Login</h1>
+    <a routerLink="/" class="btn">Back</a>
+  </header>
+
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card">
+    <label>Username</label>
+    <input formControlName="username" autocomplete="username" />
+    <label>Password</label>
+    <input formControlName="password" type="password" autocomplete="current-password" />
+    <button type="submit" [disabled]="form.invalid || submitting()" class="btn btn-primary">
+      {{ submitting() ? 'Signing in...' : 'Sign in' }}
+    </button>
+  </form>
+
+  <p class="muted demo-credentials">
+    Demo admin: <strong>admin</strong> / <strong>Admin123!</strong>
+  </p>
+</section>

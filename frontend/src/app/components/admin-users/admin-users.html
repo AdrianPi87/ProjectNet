@@ -1,0 +1,60 @@
+<section class="container">
+  <header class="toolbar">
+    <h1>User Management</h1>
+    <a routerLink="/" class="btn">Back to Orders</a>
+  </header>
+
+  @if (success()) { <p class="success">{{ success() }}</p> }
+  @if (error()) { <p class="error">{{ error() }}</p> }
+
+  <div class="grid">
+    <div class="card">
+      <h2>Create user</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+        <div class="field">
+          <label>Username</label>
+          <input formControlName="username" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input formControlName="password" type="password" />
+          <small>At least 8 characters.</small>
+        </div>
+        <div class="field">
+          <label>Role</label>
+          <select formControlName="role">
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" [disabled]="form.invalid || submitting()" class="btn btn-primary">
+          {{ submitting() ? 'Creating...' : 'Create user' }}
+        </button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Existing users</h2>
+      @if (users().length) {
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr><th>Username</th><th>Role</th><th>Created</th></tr>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.id) {
+                <tr>
+                  <td>{{ user.username }}</td>
+                  <td><span class="badge badge-neutral">{{ user.role }}</span></td>
+                  <td>{{ user.createdAtUtc | date:'medium' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="muted">No users loaded.</p>
+      }
+    </div>
+  </div>
+</section>

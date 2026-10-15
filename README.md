@@ -119,10 +119,24 @@ sqlcmd -S localhost -E -Q "IF DB_ID('ProjectNet') IS NOT NULL BEGIN ALTER DATABA
 
 Then start the backend again. It applies EF Core migrations and seeds the demo data.
 
+## Authentication and admin users
+
+Authentication uses JWT. In Development the seeder creates these demo accounts:
+
+| Role  | Username | Password       | Access |
+|---|---|---|---|
+| Admin | admin | Admin123! | Full access, including /admin/users |
+| User  | user  | User123!  | Standard application access |
+
+Login endpoint: POST /api/auth/login
+Admin user management: GET /api/users
+
 ## Frontend views
 
 - `/` - paginated order list with status, customer and page-size filters
 - `/orders/:id` - order detail, customer name, product details, confirm/ship/cancel and line management
+- /login - username and password login
+- /admin/users - admin-only user management page
 - `/create` - create a new order
 - `/products` - product catalog with category and search filters
 - `/products/create` - create a new product
@@ -141,6 +155,14 @@ Then start the backend again. It applies EF Core migrations and seeds the demo d
 | POST | `/api/orders/{id}/confirm` | Confirm pending order |
 | POST | `/api/orders/{id}/ship` | Ship confirmed order |
 | POST | `/api/orders/{id}/cancel` | Cancel non-shipped order |
+
+### Authentication
+
+| Method | Route | Description |
+|---|---|---|
+| POST | /api/auth/login | Username-and-password login. Returns JWT and role |
+| GET | /api/users | Admin-only list of users |
+| POST | /api/users | Admin-only create user |
 
 ### Customers
 

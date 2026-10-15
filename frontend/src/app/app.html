@@ -1,4 +1,4 @@
-﻿<div class="app-shell">
+<div class="app-shell">
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" routerLink="/">ProjectNet</a>
@@ -6,9 +6,20 @@
         <a routerLink="/">Orders</a>
         <a routerLink="/products">Catalog</a>
         <a routerLink="/create">New order</a>
-        <a routerLink="/customers/create">New customer</a>
         <a routerLink="/products/create">New product</a>
+        <a routerLink="/customers/create">New customer</a>
+        @if (admin) {
+          <a routerLink="/admin/users">Users</a>
+        }
       </nav>
+      <div class="auth-actions">
+        @if (loggedIn) {
+          <span class="muted">{{ username }}</span>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="logout()">Logout</button>
+        } @else {
+          <a routerLink="/login" class="btn btn-primary btn-sm">Login</a>
+        }
+      </div>
     </div>
   </header>
 
@@ -16,4 +27,3 @@
     <router-outlet />
   </main>
 </div>
-

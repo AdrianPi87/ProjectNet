@@ -8,6 +8,7 @@ public sealed class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Order> Orders => Set<Order>();
 
@@ -19,6 +20,16 @@ public sealed class AppDbContext : DbContext
             entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
             entity.Property(c => c.Email).IsRequired().HasMaxLength(150);
             entity.Property(c => c.CreatedAtUtc).IsRequired();
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(u => u.Id);
+            entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
+            entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(200);
+            entity.Property(u => u.Role).IsRequired().HasMaxLength(20);
+            entity.Property(u => u.CreatedAtUtc).IsRequired();
+            entity.HasIndex(u => u.Username).IsUnique();
         });
 
         modelBuilder.Entity<Product>(entity =>

@@ -1,0 +1,6 @@
+.card { display: flex; flex-direction: column; gap: .75rem; padding: 1.25rem; border: 1px solid #e5e7eb; border-radius: 10px; }
+label { font-weight: 600; }
+input { padding: .5rem; border: 1px solid #d1d5db; border-radius: 6px; width: 100%; }
+button { align-self: flex-start; }
+.error { color: #b91c1c; }
+.demo-credentials { margin-top: 1rem; font-size: .875rem; }

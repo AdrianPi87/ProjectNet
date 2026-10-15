@@ -1,7 +1,8 @@
+using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
-using ProjectNet.Infrastructure.Persistence;
 using ProjectNet.Domain.Common;
 using ProjectNet.Domain.Entities;
+using ProjectNet.Infrastructure.Persistence;
 
 namespace ProjectNet.Infrastructure.Seed;
 
@@ -9,9 +10,24 @@ public static class DatabaseSeeder
 {
     public static async Task SeedAsync(AppDbContext db)
     {
+        await SeedUsersAsync(db);
         await SeedCustomersAsync(db);
         await SeedProductsAsync(db);
         await SeedOrdersAsync(db);
+    }
+
+    private static async Task SeedUsersAsync(AppDbContext db)
+    {
+        if (await db.Users.AnyAsync()) return;
+
+        var users = new[]
+        {
+            User.Create("admin", BCrypt.Net.BCrypt.HashPassword("Admin123!"), "Admin"),
+            User.Create("user", BCrypt.Net.BCrypt.HashPassword("User123!"), "User")
+        };
+
+        await db.Users.AddRangeAsync(users);
+        await db.SaveChangesAsync();
     }
 
     private static async Task SeedCustomersAsync(AppDbContext db)
@@ -21,13 +37,13 @@ public static class DatabaseSeeder
         var names = new[]
         {
             ("Ana Torres", "ana.torres@example.com"),
-            ("Bruno Sánchez", "bruno.sanchez@example.com"),
-            ("Carla Muñoz", "carla.munoz@example.com"),
-            ("Diego Ramírez", "diego.ramirez@example.com"),
+            ("Bruno Sanchez", "bruno.sanchez@example.com"),
+            ("Carla Munoz", "carla.munoz@example.com"),
+            ("Diego Ramirez", "diego.ramirez@example.com"),
             ("Elena Vega", "elena.vega@example.com"),
-            ("Fernando Gómez", "fernando.gomez@example.com"),
-            ("Gabriela López", "gabriela.lopez@example.com"),
-            ("Héctor Herrera", "hector.herrera@example.com"),
+            ("Fernando Gomez", "fernando.gomez@example.com"),
+            ("Gabriela Lopez", "gabriela.lopez@example.com"),
+            ("Hector Herrera", "hector.herrera@example.com"),
             ("Irene Castillo", "irene.castillo@example.com"),
             ("Javier Ortega", "javier.ortega@example.com")
         };
@@ -99,4 +115,3 @@ public static class DatabaseSeeder
         await db.SaveChangesAsync();
     }
 }
-
