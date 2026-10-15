@@ -1,3 +1,7 @@
 :host {
   display: block;
 }
+
+form.card .btn-primary {
+  margin-top: var(--space-4);
+}
