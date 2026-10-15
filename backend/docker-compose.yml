@@ -19,6 +19,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Default: "Server=sqlserver,1433;Database=ProjectNet;User Id=sa;Password=ProjectNet!StrongPass1;TrustServerCertificate=True;"
       Messaging__UseRabbitMq: "false"
+      Jwt__Key: ${JWT_KEY:-local-docker-demo-jwt-key-change-me-0123456789}
     depends_on:
       - sqlserver
     restart: unless-stopped

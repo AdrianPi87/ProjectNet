@@ -121,26 +121,68 @@ Then start the backend again. It applies EF Core migrations and seeds the demo d
 
 ## Authentication and admin users
 
-Authentication uses JWT. In Development the seeder creates these demo accounts:
+Authentication uses JWT. Every API endpoint requires an authenticated user except `POST /api/auth/login` (enforced with an ASP.NET Core fallback authorization policy). In Development the seeder creates these demo accounts:
 
 | Role  | Username | Password       | Access |
 |---|---|---|---|
-| Admin | admin | Admin123! | Full access, including /admin/users |
+| Admin | admin | Admin123! | Full access, including `/admin/users` |
 | User  | user  | User123!  | Standard application access |
 
-Login endpoint: POST /api/auth/login
-Admin user management: GET /api/users
+- Login endpoint: `POST /api/auth/login` (rate limited: 10 attempts/minute per IP).
+- Admin user management: `GET /api/users` and `POST /api/users` (role `Admin` only).
+
+## Security
+
+### Implemented
+
+- **Secure by default**: every endpoint requires an authenticated user. Only the login endpoint is anonymous.
+- **Passwords**: BCrypt (work factor 11) and a generic error message for wrong credentials (no user enumeration by message).
+- **JWT**: issuer, audience, lifetime and signature are validated. The signing key is not committed for production: Development uses a dev-only key in `appsettings.Development.json`, and any other environment **fails fast at startup** unless `Jwt__Key` (min. 32 bytes) is provided.
+- **Brute-force protection**: login is limited to 10 attempts per minute per IP (`429 Too Many Requests`).
+- **Security headers**: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` and `Permissions-Policy` on every response; HSTS and `Content-Security-Policy: default-src 'none'` outside Development.
+- **Attack surface**: Swagger only in Development, CORS restricted to the frontend origin, EF Core parametrized queries (no SQL injection), FluentValidation on every command, pagination capped at 100 items.
+- **Frontend session handling**: route guards redirect unauthenticated users to `/login`, and any `401` response clears the session.
+
+### JWT key configuration
+
+Development works out of the box with the dev-only key in `appsettings.Development.json`. To override it locally (e.g., to simulate real secrets):
+
+```powershell
+cd backend/src/ProjectNet.Api
+dotnet user-secrets set "Jwt:Key" "<key-of-at-least-32-bytes>"
+```
+
+For Docker or production, provide the key through the environment:
+
+```bash
+JWT_KEY=<key-of-at-least-32-bytes> docker compose up --build   # Jwt__Key is mapped from JWT_KEY
+```
+
+### Pending security tasks
+
+- [ ] Move infrastructure secrets out of the repo: Kubernetes `Secret` for the connection string and JWT key; docker compose SA password via environment variable.
+- [ ] Fix `backend/deploy/k8s/`: the ConfigMap still uses a SQLite connection string and the probes point to `/swagger` (disabled in Production).
+- [ ] Add health checks (`/health`) for the Docker `HEALTHCHECK` and Kubernetes probes.
+- [ ] Map duplicated-user errors to HTTP 409 instead of 500.
+- [ ] Add vulnerability scanning to CI: `dotnet list package --vulnerable`, `npm audit --audit-level=high` and optionally a CodeQL workflow.
+- [ ] Frontend hardening: Angular `environments/` instead of hardcoded API URLs, hosting-level CSP, and evaluate httpOnly cookies vs `localStorage` for the token.
+- [ ] Account lockout and audit logging of failed logins (rate limiting only covers basic brute force).
+- [ ] Equalize login timing to avoid username enumeration (verify against a dummy BCrypt hash when the user does not exist).
+- [ ] Stronger password policy for new users (complexity/breach checks).
+- [ ] Restrict `AllowedHosts` per environment and add refresh/revocation if tokens become long-lived.
 
 ## Frontend views
 
 - `/` - paginated order list with status, customer and page-size filters
 - `/orders/:id` - order detail, customer name, product details, confirm/ship/cancel and line management
-- /login - username and password login
-- /admin/users - admin-only user management page
+- `/login` - username and password login
+- `/admin/users` - admin-only user management page
 - `/create` - create a new order
 - `/products` - product catalog with category and search filters
 - `/products/create` - create a new product
 - `/customers/create` - create a new customer
+
+All views except `/login` require an authenticated session; unauthenticated users are redirected to the login page.
 
 ## API endpoints
 
@@ -211,6 +253,8 @@ This starts:
 
 - SQL Server
 - Orders API on `http://localhost:8080`
+
+The API container receives a demo JWT key by default; set `JWT_KEY` to override it (`Jwt__Key` environment variable inside the container).
 
 Apply the Kubernetes manifests on any compatible cluster:
 

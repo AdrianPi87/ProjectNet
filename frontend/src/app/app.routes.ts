@@ -12,11 +12,11 @@ import { authGuard, adminGuard } from './guards/auth.guard';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'admin/users', component: AdminUsersComponent, canActivate: [authGuard, adminGuard] },
-  { path: '', component: OrderListComponent },
-  { path: 'create', component: CreateOrderComponent },
-  { path: 'orders/:id', component: OrderDetailComponent },
-  { path: 'products', component: ProductCatalogComponent },
-  { path: 'products/create', component: CreateProductComponent },
-  { path: 'customers/create', component: CreateCustomerComponent },
+  { path: '', component: OrderListComponent, canActivate: [authGuard] },
+  { path: 'create', component: CreateOrderComponent, canActivate: [authGuard] },
+  { path: 'orders/:id', component: OrderDetailComponent, canActivate: [authGuard] },
+  { path: 'products', component: ProductCatalogComponent, canActivate: [authGuard] },
+  { path: 'products/create', component: CreateProductComponent, canActivate: [authGuard] },
+  { path: 'customers/create', component: CreateCustomerComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];
